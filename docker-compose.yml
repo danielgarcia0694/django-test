@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:10.13-alpine
+    volumes:
+      - data:/var/lib/postgresql/data/pgdata
+    environment:
+      - POSTGRES_DB=core
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=devtest
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+
+  python:    
+    build:
+      context: .
+      dockerfile: docker/dev/python/Dockerfile
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./app:/app
+    environment:
+      DJANGO_SETTINGS_MODULE: prueba.settings
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+
+volumes:
+  data:
